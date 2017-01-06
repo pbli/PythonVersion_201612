@@ -1,13 +1,15 @@
 import csv
-import math
 import numpy as np
-import matplotlib.pyplot as pl
-import pandas as pd
-
-x=[1,2,3]
-pl.subplot(2,1,1)
-pl.plot(x)
-pl.subplot(2,1,2)
-pl.plot(x,x)
-pl.show()
-
+import matplotlib.pyplot as plt
+reader=csv.reader(open("Scenario_crossing_left_to_right_50mph.csv","r"),delimiter=',')
+keys=next(reader)   #key of data
+x=list(reader)      #remain
+N=len(x)            #length
+objN=40
+result=np.array(x).astype('float')#store data in an array as float type
+#print(keys)
+sizeA=result.shape  #size of array
+for i in range(0,sizeA[1]):# plot all
+    plt.figure(i)
+    plt.plot(result[:,i])
+    plt.show(block=False)
