@@ -41,8 +41,6 @@ R=1/10#evaluate the measurement
 X1=np.zeros([3,len(thetaDot)])
 X1[0,0]=thetaDot[0]
 P=np.eye(3)*1
-H=np.array([[1,0,0]])
-Q=np.array([[q,0,0],[0,q,0],[0, 0, q]])
 for i in range(1,len(thetaDot)):
     T=t[i+1]-t[i]
     F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
@@ -65,8 +63,6 @@ R=1/10#evaluate the measurement
 X1=np.zeros([3,len(rDot)])
 X1[0,0]=thetaDot[0]
 P=np.eye(3)*1
-H=np.array([[1,0,0]])
-Q=np.array([[q,0,0],[0,q,0],[0, 0, q]])
 for i in range(1,len(rDot)):
     T=t[i]-t[i-1]
     F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
