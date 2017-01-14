@@ -22,11 +22,11 @@ Q=np.array([[q,0,0],[0,q,0],[0, 0, q]])
 for i in range(1,len(theta)):
     T=t[i]-t[i-1]
     F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
-    X1[:,i]=F.dot(X1[:,i-1])
-    P=F.dot(P.dot(F.T))+Q
-    K=P.dot((H.T).dot(np.linalg.inv(H.dot(P.dot(H.T))+R)))
-    X1[:,i]=X1[:,i]+K.dot(theta[i]-H.dot(X1[:,i]))
-    P=(np.eye(3)-K.dot(H)).dot(P)
+    X1[:,i]=F@X1[:,i-1]
+    P=F@P@(F.T)+Q
+    K=P@(H.T)@np.linalg.inv(H@P@(H.T)+R)
+    X1[:,i]=X1[:,i]+K@(theta[i]-H@X1[:,i])
+    P=(np.eye(3)-K@H)@P
 plt.plot(theta,label='theta')
 plt.plot(X1[0,:],color='Red',label='filted')
 plt.legend()
@@ -42,13 +42,13 @@ X1=np.zeros([3,len(thetaDot)])
 X1[0,0]=thetaDot[0]
 P=np.eye(3)*1
 for i in range(1,len(thetaDot)):
-    T=t[i+1]-t[i]
+    T=t[i]-t[i-1]
     F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
-    X1[:,i]=F.dot(X1[:,i-1])
-    P=F.dot(P.dot(F.T))+Q
-    K=P.dot((H.T).dot(np.linalg.inv(H.dot(P.dot(H.T))+R)))
-    X1[:,i]=X1[:,i]+K.dot(thetaDot[i]-H.dot(X1[:,i]))
-    P=(np.eye(3)-K.dot(H)).dot(P)
+    X1[:,i]=F@X1[:,i-1]
+    P=F@P@(F.T)+Q
+    K=P@(H.T)@np.linalg.inv(H@P@(H.T)+R)
+    X1[:,i]=X1[:,i]+K@(thetaDot[i]-H@X1[:,i])
+    P=(np.eye(3)-K@H)@P
 plt.figure()
 plt.plot(thetaDot,label='thetadot')
 plt.plot(X1[0,:],color='Red',label='filted')
@@ -66,11 +66,11 @@ P=np.eye(3)*1
 for i in range(1,len(rDot)):
     T=t[i]-t[i-1]
     F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
-    X1[:,i]=F.dot(X1[:,i-1])
-    P=F.dot(P.dot(F.T))+Q
-    K=P.dot((H.T).dot(np.linalg.inv(H.dot(P.dot(H.T))+R)))
-    X1[:,i]=X1[:,i]+K.dot(rDot[i]-H.dot(X1[:,i]))
-    P=(np.eye(3)-K.dot(H)).dot(P)
+    X1[:,i]=F@X1[:,i-1]
+    P=F@P@(F.T)+Q
+    K=P@(H.T)@np.linalg.inv(H@P@(H.T)+R)
+    X1[:,i]=X1[:,i]+K@(rDot[i]-H@X1[:,i])
+    P=(np.eye(3)-K@H)@P
 plt.figure()
 plt.plot(rDot,label='rdot')
 plt.plot(X1[0,:],color='Red',label='filted rdot')
