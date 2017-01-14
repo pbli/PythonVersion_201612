@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="kalman.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="radar.py" />
   </ItemGroup>
   <PropertyGroup>

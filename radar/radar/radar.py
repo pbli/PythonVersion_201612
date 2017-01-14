@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from kalman import kalman
 
 objN=40
 result=np.genfromtxt("Scenario_crossing_left_to_right_50mph.csv",delimiter=',',skip_header=1)
@@ -11,73 +12,31 @@ for i in range(0,len(t)-1):
     if np.abs(t[i+1]-t[i])>1:
         t[i+1]=t[i]+(t[i+2]-t[i])/2
 t=t-t[0]
-#use filter to smooth theta
-q=0.0007 #control smoothness
-R=0.01#evaluate the measurement
-X1=np.zeros([3,len(t)])
-X1[0,0]=theta[0]
-P=np.eye(3)*10
-H=np.array([[1,0,0]])
-Q=np.array([[q,0,0],[0,q,0],[0, 0, q]])
-for i in range(1,len(theta)):
-    T=t[i]-t[i-1]
-    F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
-    X1[:,i]=F@X1[:,i-1]
-    P=F@P@(F.T)+Q
-    K=P@(H.T)@np.linalg.inv(H@P@(H.T)+R)
-    X1[:,i]=X1[:,i]+K@(theta[i]-H@X1[:,i])
-    P=(np.eye(3)-K@H)@P
+
 plt.plot(theta,label='theta')
-plt.plot(X1[0,:],color='Red',label='filted')
+theta=kalman(theta,0.0007,0.01,10,t)
+plt.plot(theta,color='Red',label='filted',linewidth=2)
 plt.legend()
 plt.show(block=False)
 plt.savefig('theta.pdf')
-theta=X1[0,:]
+
 
 thetaDot=np.diff(theta)/np.diff(t)
-#use filter to smooth theta
-q=1/10000 #control smoothness
-R=1/10#evaluate the measurement
-X1=np.zeros([3,len(thetaDot)])
-X1[0,0]=thetaDot[0]
-P=np.eye(3)*1
-for i in range(1,len(thetaDot)):
-    T=t[i]-t[i-1]
-    F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
-    X1[:,i]=F@X1[:,i-1]
-    P=F@P@(F.T)+Q
-    K=P@(H.T)@np.linalg.inv(H@P@(H.T)+R)
-    X1[:,i]=X1[:,i]+K@(thetaDot[i]-H@X1[:,i])
-    P=(np.eye(3)-K@H)@P
 plt.figure()
 plt.plot(thetaDot,label='thetadot')
-plt.plot(X1[0,:],color='Red',label='filted')
+thetaDot=kalman(thetaDot,0.00001,0.01,1,t[0:len(t)-1])
+plt.plot(thetaDot,color='Red',label='filted',linewidth=2)
 plt.legend()
 plt.show(block=False)
 plt.savefig('filted thetaDot.pdf')
-thetaDot=X1[0,:]
 
-#use filter to smooth rdot
-q=1/100000 #control smoothness
-R=1/10#evaluate the measurement
-X1=np.zeros([3,len(rDot)])
-X1[0,0]=thetaDot[0]
-P=np.eye(3)*1
-for i in range(1,len(rDot)):
-    T=t[i]-t[i-1]
-    F=np.array([[1, T, 0.5*T*T], [0, 1, T], [0, 0, 1]])#system matrix
-    X1[:,i]=F@X1[:,i-1]
-    P=F@P@(F.T)+Q
-    K=P@(H.T)@np.linalg.inv(H@P@(H.T)+R)
-    X1[:,i]=X1[:,i]+K@(rDot[i]-H@X1[:,i])
-    P=(np.eye(3)-K@H)@P
 plt.figure()
 plt.plot(rDot,label='rdot')
-plt.plot(X1[0,:],color='Red',label='filted rdot')
+rDot=kalman(rDot,0.00001,0.1,1,t)
+plt.plot(rDot,color='Red',label='filted rdot',linewidth=2)
 plt.legend()
 plt.show(block=False)
 plt.savefig('filted rdot.pdf')
-rDot=X1[0,:]
 
 #find objectNO
 error=np.zeros(40)
