@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from kalman import kalman
-
+import csv
 objN=40
 result=np.genfromtxt("Scenario_crossing_left_to_right_50mph.csv",delimiter=',',skip_header=1)
 r=result[:,2] #range m
@@ -138,6 +138,10 @@ plt.savefig('Velocity error at Y.pdf')
 
 meanPVXY=np.array([np.mean(RadarPx-RefPx),np.mean(RadarPy-RefPy),np.mean(RadarVx[0:n-1]-RefVx),np.mean(RadarVy[0:n-1]-RefVy)])
 stdPVXY=np.array([np.std(RadarPx-RefPx),np.std(RadarPy-RefPy),np.std(RadarVx[0:n-1]-RefVx),np.std(RadarVy[0:n-1]-RefVy)])
-OUTPUT=np.array([meanPVXY,stdPVXY])
-np.savetxt('OUTPUT.csv',OUTPUT,delimiter=',',fmt='%1.5f')
-
+itemName=['Px', 'Py', 'Vx', 'Vy']
+output=zip(itemName,meanPVXY,stdPVXY)
+with open('report.csv','w', newline='') as f:
+    writer=csv.writer(f)
+    writer.writerow(['item','mean','std'])
+    for meb in output:
+        writer.writerows([meb])
