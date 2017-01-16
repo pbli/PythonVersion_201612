@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from kalman import kalman
 import csv
-objN=40
+from kalman import kalman
+
 result=np.genfromtxt("Scenario_crossing_left_to_right_50mph.csv",delimiter=',',skip_header=1)
-r=result[:,2] #range m
-rDot=result[:,3]/3.6 #range rate m/s
-theta=-result[:,4]*np.pi/180 #angle in radius
+#reference data, polar coordinates
+r=result[:,2] #m
+rDot=result[:,3]/3.6 # m/s
+theta=-result[:,4]*np.pi/180 #radius
 t=result[:,6]# time in s
 for i in range(0,len(t)-1):
     if np.abs(t[i+1]-t[i])>1:
@@ -20,11 +21,10 @@ plt.legend()
 plt.show(block=False)
 plt.savefig('filtedTheta.pdf')
 
-
 thetaDot=np.diff(theta)/np.diff(t)
 plt.figure()
 plt.plot(thetaDot,label='thetaDot')
-thetaDot=kalman(thetaDot,0.00001,0.01,1,t[0:len(t)-1])
+thetaDot=kalman(thetaDot,0.00002,0.005,2,t[0:len(t)-1])
 plt.plot(thetaDot,color='Red',label='filted thetaDot',linewidth=2)
 plt.legend()
 plt.show(block=False)
@@ -44,6 +44,7 @@ for i in range(0,40):
     error[i]=np.mean(np.absolute(np.sqrt(result[:,7+i]*result[:,7+i]+result[:,i+47]*result[:,i+47])-r))#1D
 print(np.argmin(error)) #object number is 32, it is the 33rd object
 
+#radar p v x y, ref p v x y
 RadarPx=result[:,7+32]
 RadarPy=result[:,7+32+40]
 RadarVx=result[:,7+32+80]
@@ -142,6 +143,6 @@ itemName=['Px', 'Py', 'Vx', 'Vy']
 output=zip(itemName,meanPVXY,stdPVXY)
 with open('report.csv','w', newline='') as f:
     writer=csv.writer(f)
-    writer.writerow(['item','mean','std'])
+    writer.writerow(['Term','mean','std'])
     for meb in output:
         writer.writerows([meb])
